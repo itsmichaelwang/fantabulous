@@ -1,6 +1,19 @@
 $(document).ready(function() {
-    db = [];
 
+    var db = [
+        {
+            name: "Unsorted Tabs",
+            tabs: []
+        },
+        {
+            name: "WildHacks",
+            tabs: []
+        },
+        {
+            name: "Job Search",
+            tabs: []
+        }
+    ];
 
     var groupObject = {
         name: " ",
@@ -10,16 +23,39 @@ $(document).ready(function() {
     $( "#addButton" ).click(function() {
         value = $("#groupName").val();
         groupObject.name = value;
-        console.log(groupObject);
         db.push(groupObject);
-        console.log("db is", db);
     });
-
-
 
     chrome.tabs.query({}, function(tabs) {
         $.each(tabs, function(idx, val) {
-            $("#unsorted").append(val.url);
+            db[0].tabs.push(val);
         });
+
+        render(db);
     });
 });
+
+var render = function(db) {
+    $('.row-fluid').empty();
+    // create a column for each tab group
+    $.each(db, function(idx, val) {
+        var col =
+            $('<div/>', {
+                class: 'col-lg-3',
+            }).append(
+                $('<h1/>', {
+                    class: 'panel-heading',
+                    text: val.name
+                })
+            );
+
+        // populate tab groups with tabs inside
+        $.each(val.tabs, function(idx, val) {
+            $('<p/>', {
+                text: val.title
+            }).appendTo(col);
+        });
+
+        col.appendTo('.row-fluid');
+    });
+}
