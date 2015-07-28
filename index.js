@@ -1,3 +1,7 @@
 $(document).ready(function() {
-    console.log("okay");
+    chrome.tabs.query({}, function(tabs) {
+        $.each(tabs, function(idx, val) {
+            $("#unsorted").append(val.url);
+        });
+    });
 });
