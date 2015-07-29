@@ -7,9 +7,12 @@
     });
 
     var MainView = Backbone.View.extend({
-        el: $('body'),
         initialize: function() {
             var workSpace = this.workSpace = new WorkSpace();
+            var isLoaded = this.isLoaded = new Backbone.Model({
+                loaded: false
+            });
+            this.listenTo(this.isLoaded, 'change:loaded', this.render);
 
             chrome.tabs.query({}, function(tabs) {
                 var temp = [];
@@ -18,14 +21,23 @@
                     temp.push(t);
                 });
                 workSpace.set('ungrouped', temp);
-                workSpace.set('WildHacks', []);
+                workSpace.set('WildHacks', temp);
+
+                isLoaded.set('loaded', true);
             });
-            console.log(this.workSpace);
         },
         render: function() {
+            _.each(this.workSpace.attributes, function(item, index, items) {
+                $('#groups').append('\
+                    <div id="' + index + '" class="col-lg-3">\
+                        <h1>' + index + '</h1>\
+                    </div>');
 
-
-
+                _.each(item, function(item, index, items) {
+                    console.log(item);
+                    
+                })
+            }, this);
         }
     });
 
