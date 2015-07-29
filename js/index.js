@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 (function($) {
     var Tab = Backbone.Model.extend({
         defaults: {
