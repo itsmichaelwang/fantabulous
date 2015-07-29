@@ -24,6 +24,7 @@ $(document).ready(function() {
         value = $("#groupName").val();
         groupObject.name = value;
         db.push(groupObject);
+        render(db);
     });
 
     chrome.tabs.query({}, function(tabs) {
