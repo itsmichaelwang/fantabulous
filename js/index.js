@@ -8,8 +8,17 @@ $(document).ready(function() {
     var TabView = Backbone.View.extend();
 
     var ButtonView = Backbone.View.extend({
+
         events : {
             'click #addButton': 'addGroup'
+        },
+
+        addGroup: function () {
+            var userInput = $('#groupName').val();
+            if("userInput" in this.model.attributes){
+            }else{
+                this.model.set(userInput, []);
+            }
         },
 
         render: function() {
@@ -38,6 +47,7 @@ $(document).ready(function() {
                 loaded: false
             });
             this.listenTo(this.isLoaded, 'change:loaded', this.render);
+            this.listenTo(this.workSpace, 'change', this.render);
 
             chrome.tabs.query({}, function(tabs) {
                 var temp = [];
@@ -65,13 +75,16 @@ $(document).ready(function() {
                 }, this);
             }, this);
 
+            this.buttonView = new ButtonView({
+                model: this.workSpace
+            });
+            this.$el.append(this.buttonView.render().el);
+
             return this;
         }
     });
 
     var mainView = new MainView();
-    var buttonView = new ButtonView();
     $('body').append(mainView.render().el);
-    $('body').append(buttonView.render().el);
 
 });
