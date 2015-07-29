@@ -7,7 +7,31 @@ $(document).ready(function() {
 
     var TabView = Backbone.View.extend();
 
+    var ButtonView = Backbone.View.extend({
+        events : {
+            'click #addButton': 'addGroup'
+        },
+
+        render: function() {
+            this.$el.html('');
+            this.$el.append('\
+                <div class="row-fluid">\
+                  <div class="col-lg-6">\
+                    <div class="input-group">\
+                      <span class="input-group-btn">\
+                        <button id="addButton" class="btn btn-default" type="button">Add Group</button>\
+                      </span>\
+                      <input id="groupName" type="text" class="form-control" placeholder="Search for...">\
+                    </div>\
+                  </div>\
+                </div>');
+            return this;
+        }
+
+    });
+
     var MainView = Backbone.View.extend({
+
         initialize: function() {
             var workSpace = this.workSpace = new WorkSpace();
             var isLoaded = this.isLoaded = new Backbone.Model({
@@ -26,7 +50,8 @@ $(document).ready(function() {
 
                 isLoaded.set('loaded', true);
             });
-        }
+        },
+
         render: function() {
             this.$el.html('');
             _.each(this.workSpace.attributes, function(item, groupName, items) {
@@ -45,5 +70,8 @@ $(document).ready(function() {
     });
 
     var mainView = new MainView();
-    $('body').prepend(mainView.render().el);
+    var buttonView = new ButtonView();
+    $('body').append(mainView.render().el);
+    $('body').append(buttonView.render().el);
+
 });
