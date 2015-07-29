@@ -1,37 +1,35 @@
 (function($) {
-    var Tab = Backbone.Model.extend({
+
+    var WorkSpace = Backbone.Model.extend({
         defaults: {
-            groupName: '',
-            data: {}
+            'ungrouped': []
         }
-
     });
 
-    var TabCollection = Backbone.Collection.extend({
-        model: Tab
-    });
-
-    var TabView = Backbone.View.extend({
+    var MainView = Backbone.View.extend({
         el: $('body'),
         initialize: function() {
-            var tabCollection = this.tabCollection = new TabCollection();
+            var workSpace = this.workSpace = new WorkSpace();
 
             chrome.tabs.query({}, function(tabs) {
+                var temp = [];
                 _.each(tabs, function(tab) {
-                    var t = new Tab({
-                        data: tab
-                    });
-                    tabCollection.add(t);
+                    var t = new Backbone.Model(tab);
+                    temp.push(t);
                 });
+                workSpace.set('ungrouped', temp);
+                workSpace.set('WildHacks', []);
             });
-            console.log(this.tabCollection);
+            console.log(this.workSpace);
         },
         render: function() {
 
+
+
         }
     });
 
-    var tabView = new TabView();
+    var mainView = new MainView();
 })(jQuery);
 
 // $(document).ready(function() {
