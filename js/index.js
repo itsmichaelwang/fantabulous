@@ -20,18 +20,31 @@ $(document).ready(function() {
             this.$el.html('');
             this.loaded.done(function() {
                 _.each(this.workspace, function(tabGroup, tabGroupId) {
-                    this.$el.append('<div id="column' + tabGroupId + '" class="col-lg-3"></div>')
-                    this.$('#column' + tabGroupId).append('<div id=' + tabGroupId + ' class="panel panel-default"></div>');
+                    
+                    var tabGroupDivId = 'col-' + tabGroupId;
+                    this.$el.append('<div id="' + tabGroupDivId + '" class="col-lg-3"></div>');
+                    this.$('#' + tabGroupDivId).append('<div id=' + tabGroupId + ' class="panel panel-default"></div>');
+                    
                     this.$('#' + tabGroupId).append('<div class="panel-heading"><h3>' + tabGroup.name + '</h3></div>');
                     this.$('#' + tabGroupId).append('<ul class="list-group"></ul>');
+                    
+                    self = this;
                     this.$('#' + tabGroupId + ' .list-group').sortable({
-                        connectWith: ".list-group"
+                        connectWith: ".list-group",
+                        update: function(event, ui) {
+                            if (this === ui.item.parent()[0]) {
+                                var tabId = ui.item.context.id;
+                                var oldGroup = self.tabsHash[tabId].pinned ? 'pinned' : oldGroup = self.tabsHash[tabId].windowId;
+                                var newGroup = parseInt(ui.item.parent().parent()[0].id);
+
+                                
+                            }
+                        }
                     });
                     
                     _.each(tabGroup, function(tab, tabId) {
                         if (tabId != "name") {
-                            this.$('#' + tabGroupId + " ul").append('<li id="' + tabId + '" class="list-group-item">' + tab.title + '</li>');
-                            // this.$('#' + tabId).draggable();
+                            this.$('#' + tabGroupId + ' .list-group').append('<li id="' + tabId + '" class="list-group-item">' + tab.title + '</li>');
                         }
                     }, this);
                 }, this);
@@ -42,14 +55,19 @@ $(document).ready(function() {
             
         },
         refreshTabs: function() {
+            this.tabsHash = {}
             this.loaded = $.Deferred();
-            
             chrome.tabs.query({}, (function(tabs) {
+                console.log(tabs);
                 _.each(tabs, function(tab, idx) {
+                    this.tabsHash[tab.id] = tab;
+                    
                     if (tab.pinned) {
                         this.workspace.pinned = this.workspace.pinned || {};
                         this.workspace.pinned.name = this.workspace.pinned.name || "Pinned Tabs";
                         this.workspace.pinned[tab.id] = tab;
+                    } else if (tab.title == "Fantabulous") {
+                        return;
                     } else {
                         this.workspace[tab.windowId] = this.workspace[tab.windowId] || {};
                         this.workspace[tab.windowId].name = this.workspace[tab.windowId].name || "Window " + tab.windowId;

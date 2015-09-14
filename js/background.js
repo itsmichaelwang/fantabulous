@@ -4,7 +4,6 @@ chrome.browserAction.onClicked.addListener(function (tab) {
     }, function(window) {
         chrome.windows.create({
             url: "index.html",
-            type: "panel"
         });
     });
 });
