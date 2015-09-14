@@ -1,17 +1,6 @@
 $(document).ready(function() {
     
     var ButtonView = Backbone.View.extend({
-        events : {
-            'click .add-button': 'addGroup'
-        },
-        addGroup: function () {
-            console.log("clicked");
-            // var userInput = $('#groupName').val();
-            // if("userInput" in this.model.attributes){
-            // } else {
-            //     this.model.set(userInput, []);
-            // }
-        },
         render: function() {
             this.$el.html('');
             this.$el.append('<div class="add-button"><span class="glyphicon glyphicon-plus"></span></div>');
@@ -22,6 +11,7 @@ $(document).ready(function() {
     var MainView = Backbone.View.extend({
         initialize: function() {
             this.workspace = {};
+            this.children = this.children || {};
             this.loaded = $.Deferred();
             
             chrome.tabs.query({}, (function(tabs) {
@@ -40,6 +30,9 @@ $(document).ready(function() {
                 
                 this.loaded.resolveWith(this);
             }).bind(this));
+            
+            this.children.buttonView = new ButtonView();
+            
         },
         render: function() {
             this.$el.html('');
@@ -51,16 +44,21 @@ $(document).ready(function() {
                     this.$('#' + tabGroupId).append('<ul class="list-group"></ul>');
                     
                     _.each(tabGroup, function(tab, tabId) {
-                        this.$('#' + tabGroupId + " ul").append('<li class="list-group-item">' + tab.title + '</li>');
+                        if (tabId != "name") {
+                            this.$('#' + tabGroupId + " ul").append('<li class="list-group-item">' + tab.title + '</li>');
+                        }
                     }, this);
                 }, this);
-                
-                this.buttonView = new ButtonView();
-                this.$el.append(this.buttonView.render().el);
-                
             });
+            
+            this.$el.append(this.children.buttonView.render().el);
             return this;
             
+        },
+        events: {
+            'click .add-button': function() {
+                console.log(this.workspace);
+            }
         }
     });
 
